@@ -5,6 +5,7 @@
 {% block content %}
 <h1>Your Assigned Tasks</h1>
 
+{% if tasks %}
 <table class="table table-striped">
     <thead>
         <tr>
@@ -27,14 +28,13 @@
                 {% endif %}
             </td>
             <td>
-                <a href="{% url 'accounts:submit_task' task.id %}" class="btn btn-success btn-sm">Submit</a>
+                <a href="{% url 'accounts:submit_task' task.id %}" class="btn btn-success btn-sm">Submit Work</a>
             </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
-
-{% if not tasks %}
-<p>No tasks have been assigned yet.</p>
+{% else %}
+<p>No tasks have been assigned to you yet.</p>
 {% endif %}
 {% endblock %}

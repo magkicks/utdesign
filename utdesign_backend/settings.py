@@ -104,16 +104,23 @@ ROOT_URLCONF = 'utdesign_backend.urls'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'utdesigndb'),  # Your database name
-        'USER': os.getenv('DB_USER', 'postgres'),    # Your database username
-        'PASSWORD': os.getenv('DB_PASSWORD', 'Capstonedesign2024'),  # Your database password
-        'HOST': os.getenv('DB_HOST', 'localhost'),   # Your database host (use "localhost" for local setups)
-        'PORT': os.getenv('DB_PORT', '5432'),        # Default PostgreSQL port
+        'ENGINE': 'django.db.backends.postgresql',  # Use PostgreSQL as the database engine
+        'NAME': os.getenv('DB_NAME', 'utdesigndb'),  # Database name from your Render setup
+        'USER': os.getenv('DB_USER', 'utdesigndb_user'),  # Username from your Render setup
+        'PASSWORD': os.getenv('DB_PASSWORD', '8dPR8vb37531OyTonp6yMTVU3cyq6ZXn'),  # Password from your Render setup
+        'HOST': os.getenv('DB_HOST', 'dpg-cteh9u3tq21c73bjibhg-a.oregon-postgres.render.com'),  # Host from your Render setup
+        'PORT': os.getenv('DB_PORT', '5432'),  # Default PostgreSQL port
     }
 }
+
 
 
 # Password validation
