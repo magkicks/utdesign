@@ -443,7 +443,7 @@ def assign_tasks(request):
     print(f"DEBUG: Proposals available: {[proposal.title for proposal in proposals]}")
     print(f"DEBUG: Existing tasks: {[task.title for task in tasks]}")
 
-    return render(request, 'faculty/assign_tasks.html', {
+    return render(request, 'accounts/assign_tasks.html', {
         'form': TaskForm(),
         'tasks': tasks,
         'proposals': proposals,
