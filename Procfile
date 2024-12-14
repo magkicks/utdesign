@@ -1,1 +1,1 @@
-web: gunicorn utdesign.wsgi 
+web: gunicorn utdesign.wsgi --log-file -

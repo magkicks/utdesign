@@ -9,7 +9,7 @@ class AccountsConfig(AppConfig):
         from django.contrib.auth.models import User
         from django.core.validators import RegexValidator
 
-        # Modify the username field to allow spaces
+      
         username_field = User._meta.get_field('username')
         username_field.validators = [
             RegexValidator(

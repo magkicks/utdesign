@@ -410,65 +410,80 @@ def assign_tasks(request):
 
     if request.method == 'POST':
         form = TaskForm(request.POST, request.FILES)
+        proposal_id = request.POST.get('proposal_id', None)
+        print(f"DEBUG: Proposal ID submitted: {proposal_id}")  # Log submitted proposal_id
+
         if form.is_valid():
             task = form.save(commit=False)
-            # Check if the task should be general (not linked to a proposal)
-            proposal_id = request.POST.get('proposal_id', None)
-            if proposal_id:  # If a proposal is selected
-                task.proposal_id = proposal_id
-            else:  # If no proposal is selected
-                task.proposal = None  # General task for all students
+            if proposal_id:  # Check if a proposal_id was submitted
+                proposal = Proposal.objects.filter(id=proposal_id).first()
+                if proposal:
+                    task.proposal = proposal
+                    print(f"DEBUG: Task linked to Proposal ID: {proposal.id} - {proposal.title}")
+                else:
+                    print(f"DEBUG: Proposal ID {proposal_id} not found in the database.")
+            else:
+                print("DEBUG: No Proposal ID provided; task will be general.")
+
             task.save()
             messages.success(request, 'Task created successfully!')
-            return redirect('accounts:assign_tasks')
-    else:
-        form = TaskForm()
+            return redirect('faculty:assign_tasks')
+        else:
+            print(f"DEBUG: Form errors: {form.errors}")
+            messages.error(request, 'Failed to create task. Check the form for errors.')
 
-    # Fetch proposals for the faculty to assign tasks to specific ones
     proposals = Proposal.objects.all()
     tasks = Task.objects.all()
-    return render(request, 'accounts/assign_tasks.html', {
-        'form': form,
+
+    print(f"DEBUG: Proposals available: {[proposal.title for proposal in proposals]}")
+    print(f"DEBUG: Existing tasks: {[task.title for task in tasks]}")
+
+    return render(request, 'faculty/assign_tasks.html', {
+        'form': TaskForm(),
         'tasks': tasks,
         'proposals': proposals,
     })
 
 
+
+
 @login_required
 def student_tasks(request):
-    # Get general tasks (not linked to any proposal)
     general_tasks = Task.objects.filter(proposal__isnull=True)
+    print(f"DEBUG: General tasks: {[task.title for task in general_tasks]}")
 
-    # Get tasks linked to proposals assigned to the student's group
     member = Member.objects.filter(user=request.user).first()
     if member:
-        # Correctly traverse the relationship to find tasks linked to the student's group
-        group_tasks = Task.objects.filter(proposal__in=Proposal.objects.filter(assigned_group__members=member))
+        groups = Group.objects.filter(members=member)
+        print(f"DEBUG: Groups for member {member.name}: {[group.name for group in groups]}")
+
+        group_tasks = Task.objects.filter(proposal__assigned_group__in=groups)
+        print(f"DEBUG: Group-specific tasks: {[task.title for task in group_tasks]}")
     else:
         group_tasks = Task.objects.none()
+        print("DEBUG: No member found for the logged-in user.")
 
-    # Combine both queries
     tasks = general_tasks | group_tasks
+    print(f"DEBUG: Combined tasks for user {request.user.username}: {[task.title for task in tasks]}")
 
-    return render(request, 'student/tasks.html', {'tasks': tasks})
+    return render(request, 'accounts/student_tasks.html', {'tasks': tasks})
 
-
-
-
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from .models import Task, TaskSubmission, Group, Member
 
 @login_required
 def assigned_tasks(request):
     try:
-        # Get the student's Member instance
+        # Get the current user's Member instance
         member = Member.objects.get(user=request.user)
 
-        # Get tasks linked to proposals assigned to the student's group
-        tasks = Task.objects.filter(proposal__assigned_group__members=member)
+        # Find all groups the user belongs to
+        user_groups = Group.objects.filter(members=member)
+
+        # Retrieve tasks linked to proposals assigned to the user's groups
+        tasks = Task.objects.filter(proposal__assigned_group__in=user_groups).distinct()
+
     except Member.DoesNotExist:
-        tasks = []  # No tasks if no Member is found
+        # Handle case where the user is not linked to any Member
+        tasks = Task.objects.none()
 
     return render(request, 'accounts/assigned_tasks.html', {'tasks': tasks})
 
@@ -634,23 +649,24 @@ def view_submissions(request, task_id=None):
     })
 
 
-
 @login_required
 def submit_task(request, task_id):
-    task = get_object_or_404(Task, id=task_id)  # Fetch the task
+    # Get the specific task from the URL
+    task = get_object_or_404(Task, id=task_id)
+
     if request.method == 'POST':
         form = TaskSubmissionForm(request.POST, request.FILES)
         if form.is_valid():
             submission = form.save(commit=False)
-            submission.task = task
-            submission.student = request.user  # Link submission to the logged-in student
+            submission.task = task  # Automatically associate the task
+            submission.student = request.user
             submission.save()
-            messages.success(request, 'Your submission has been saved successfully!')
+            messages.success(request, f'Submission for task "{task.title}" saved successfully!')
             return redirect('accounts:assigned_tasks')
     else:
         form = TaskSubmissionForm()
-    return render(request, 'accounts/submit_task.html', {'form': form, 'task': task})
 
+    return render(request, 'accounts/submit_task.html', {'form': form, 'task': task})
 
 
 @login_required

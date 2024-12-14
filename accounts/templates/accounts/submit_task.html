@@ -1,14 +1,51 @@
 {% extends "base.html" %}
 
+{% block title %}Your Assigned Tasks{% endblock %}
+
 {% block content %}
-<h1>Submit Task: {{ task.title }}</h1>
+<h1>Your Assigned Tasks</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Task Title</th>
+            <th>Description</th>
+            <th>Attachment</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <h2>Submit Task: {{ task.title }}</h2>
 <p>{{ task.description }}</p>
 
-<form method="POST" enctype="multipart/form-data">
+<form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 
 <a href="{% url 'accounts:assigned_tasks' %}" class="btn btn-secondary">Back to Assigned Tasks</a>
+
+        {% for task in tasks %}
+        <tr>
+            <td>{{ task.title }}</td>
+            <td>{{ task.description }}</td>
+            <td>
+                {% if task.attachment %}
+                <a href="{{ task.attachment.url }}" target="_blank">Download</a>
+                {% else %}
+                No Attachment
+                {% endif %}
+            </td>
+            <td>
+                <a href="{% url 'accounts:submit_task' task.id %}" class="btn btn-success btn-sm">Submit Work</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if not tasks %}
+<p>No tasks have been assigned to you yet.</p>
+{% endif %}
 {% endblock %}

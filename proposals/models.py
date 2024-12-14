@@ -24,7 +24,7 @@ class Proposal(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
-        # Generate a unique proposal number if it doesn't exist
+        
         if not self.proposal_number:
             last_proposal = Proposal.objects.order_by('-id').first()
             next_number = 1 if not last_proposal else int(last_proposal.proposal_number.split('-')[1]) + 1

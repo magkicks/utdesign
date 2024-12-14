@@ -3,7 +3,6 @@ from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from proposals.models import Proposal
 import os
-# Create your views here.
 from django.http import HttpResponse
 from proposals.models import Proposal
 from accounts.models import Task, Group, Member

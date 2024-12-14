@@ -15,19 +15,21 @@
     </thead>
     <tbody>
         {% for task in tasks %}
-        <tr>
-            <td>{{ task.title }}</td>
-            <td>{{ task.description }}</td>
-            <td>
-                {% if task.attachment %}
-                <a href="{{ task.attachment.url }}" target="_blank">Download</a>
-                {% else %}
-                No Attachment
-                {% endif %}
-            </td>
-            <td>{{ task.created_at }}</td>
-        </tr>
-        {% endfor %}
+<tr>
+    <td>{{ task.title }}</td>
+    <td>{{ task.description }}</td>
+    <td>
+        {% if task.attachment %}
+        <a href="{{ task.attachment.url }}" target="_blank">Download</a>
+        {% else %}
+        No Attachment
+        {% endif %}
+    </td>
+    <td>
+        <a href="{% url 'accounts:submit_task' task.id %}" class="btn btn-success btn-sm">Submit Work</a>
+    </td>
+</tr>
+{% endfor %}
     </tbody>
 </table>
 {% endblock %}

@@ -5,7 +5,6 @@ from .models import Group
 from proposals.models import Proposal
 from django.contrib.auth.forms import UserCreationForm
 from .models import UserProfile
-#from .widgets import ProposalPreferenceField  # If you have custom widgets for preferences
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django import forms
@@ -33,7 +32,7 @@ class GroupFormationForm(forms.ModelForm):
                 help_text="Rank this proposal from 1 (highest preference) to 10 (lowest preference)."
             )
 
-        # Add fields for group members' details
+        
         for i in range(1, 7):  # For 6 group members
             self.fields[f'member_name_{i}'] = forms.CharField(
                 label=f"Member {i} Name", required=False
@@ -45,7 +44,7 @@ class GroupFormationForm(forms.ModelForm):
                 label=f"Member {i} Phone", required=False
             )
 
-        # Add fields for 3 time slots (free text instead of TimeField)
+       
         for i in range(1, 4):  # For 3 time slots
             self.fields[f'time_slot_{i}'] = forms.CharField(
                 label=f"Time Slot {i}", required=False,
@@ -86,9 +85,9 @@ class GroupFormationForm(forms.ModelForm):
         meeting_slots = [
             self.cleaned_data.get(f'time_slot_{i}') for i in range(1, 4)
         ]
-        instance.meeting_slots = [slot for slot in meeting_slots if slot]  # Filter out empty slots
+        instance.meeting_slots = [slot for slot in meeting_slots if slot]  
 
-        # Handle proposal preferences (assign later in the view)
+        # Handle proposal preferences 
         if commit:
             instance.save()
         return instance
@@ -104,7 +103,7 @@ class CustomUserCreationForm(UserCreationForm):
         required=True,
         validators=[
             RegexValidator(
-                regex=r'^[\w\s]+$',  # Allows alphanumeric characters and spaces
+                regex=r'^[\w\s]+$',  # Allows characters and spaces
                 message="Username can only contain letters, numbers, and spaces."
             )
         ],
@@ -119,7 +118,7 @@ class TaskForm(forms.ModelForm):
 class TaskSubmissionForm(forms.ModelForm):
     class Meta:
         model = TaskSubmission
-        fields = ['task', 'content', 'attachment']  # Include the task field
+        fields = ['task', 'content', 'attachment']  
 
     def __init__(self, *args, **kwargs):
         task = kwargs.pop('task', None)
@@ -128,8 +127,8 @@ class TaskSubmissionForm(forms.ModelForm):
         if task:
             # Set the queryset to include only the specific task
             self.fields['task'].queryset = Task.objects.filter(id=task.id)
-            self.fields['task'].initial = task  # Pre-select the task
-            self.fields['task'].disabled = True  # Make the field read-only
+            self.fields['task'].initial = task  
+            self.fields['task'].disabled = True  
         else:
             # If no task is provided, clear the queryset
             self.fields['task'].queryset = Task.objects.none()

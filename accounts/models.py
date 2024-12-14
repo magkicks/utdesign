@@ -78,7 +78,7 @@ class Group(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        # Ensure name is not empty
+        
         if not self.name:
             raise ValueError("The 'name' field cannot be empty.")
 
@@ -86,7 +86,7 @@ class Group(models.Model):
         if self.leader:
             self.leader = self.leader.upper()
 
-        # Ensure all members are linked to a UserProfile
+        
         for member in self.members.all():
             if not member.user:
                 print(f"Warning: Member {member.name} is not linked to a UserProfile.")
