@@ -427,7 +427,12 @@ def assign_tasks(request):
 
             task.save()
             messages.success(request, 'Task created successfully!')
-            return redirect('faculty:assign_tasks')
+            return render(request, 'accounts/assign_tasks.html', {
+                'form': TaskForm(),
+                'tasks': tasks,
+                'proposals': proposals,
+            })
+
         else:
             print(f"DEBUG: Form errors: {form.errors}")
             messages.error(request, 'Failed to create task. Check the form for errors.')
