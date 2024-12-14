@@ -1,0 +1,33 @@
+{% if tasks %}
+<h1>Your Assigned Tasks</h1>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Task Title</th>
+            <th>Description</th>
+            <th>Attachment</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for task in tasks %}
+        <tr>
+            <td>{{ task.title }}</td>
+            <td>{{ task.description }}</td>
+            <td>
+                {% if task.attachment %}
+                <a href="{{ task.attachment.url }}" target="_blank">Download</a>
+                {% else %}
+                No Attachment
+                {% endif %}
+            </td>
+            <td>
+                <a href="{% url 'accounts:submit_task' task.id %}" class="btn btn-success btn-sm">Submit Work</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No tasks assigned to you yet.</p>
+{% endif %}

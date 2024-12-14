@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Submissions for Your Proposals{% endblock %}
+
+{% block content %}
+<h1>Submissions for Your Proposals</h1>
+
+<!-- Section for Submitted Feedback -->
+<h3>Submitted Feedback</h3>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Task Title</th>
+            <th>Student</th>
+            <th>Feedback</th>
+            <th>Submitted At</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for submission in submissions %}
+        {% if submission.sponsor_comment %}
+        <tr>
+            <td>{{ submission.task.title }}</td>
+            <td>{{ submission.student.username }}</td>
+            <td>{{ submission.sponsor_comment }}</td>
+            <td>{{ submission.submitted_at }}</td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if submissions|length == 0 or not submissions|dictsortreversed:"sponsor_comment" %}
+<p>No feedback submitted yet.</p>
+{% endif %}
+
+<!-- Section for Providing Feedback -->
+<h3>Provide Feedback</h3>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Task Title</th>
+            <th>Student</th>
+            <th>Faculty Feedback</th>
+            <th>Attachment</th>
+            <th>Submitted At</th>
+            <th>Sponsor Feedback</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for submission in submissions %}
+        <tr>
+            <td>{{ submission.task.title }}</td>
+            <td>{{ submission.student.username }}</td>
+            <td>{{ submission.content }}</td>
+            <td>
+                {% if submission.attachment %}
+                <a href="{{ submission.attachment.url }}" target="_blank">Download</a>
+                {% else %}
+                No Attachment
+                {% endif %}
+            </td>
+            <td>{{ submission.submitted_at }}</td>
+            <td>{{ submission.sponsor_comment }}</td>
+            <td>
+                <form method="POST">
+                 {% csrf_token %}
+                 <input type="hidden" name="submission_id" value="{{ submission.id }}">
+                 <textarea name="sponsor_comment" class="form-control">{{ submission.sponsor_comment }}</textarea>
+                 <button type="submit" class="btn btn-primary btn-sm mt-1">Save Feedback</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if submissions|length == 0 %}
+<p>No submissions available for your proposals.</p>
+{% endif %}
+{% endblock %}

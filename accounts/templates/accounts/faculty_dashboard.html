@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Faculty Dashboard{% endblock %}
+
+{% block content %}
+<h1>Hello, {{ user.username }}!</h1>
+<h2>Welcome to the Faculty Dashboard</h2>
+
+<!-- Logout Button -->
+<form action="{% url 'accounts:logout' %}" method="post" class="mb-3">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Logout</button>
+</form>
+
+<!-- Tabs Navigation -->
+<ul class="nav nav-tabs" id="facultyTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="manage-groups-tab" data-bs-toggle="tab" data-bs-target="#manage-groups" type="button" role="tab" aria-controls="manage-groups" aria-selected="true">
+            Manage Groups
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="assigned-proposals-tab" data-bs-toggle="tab" data-bs-target="#assigned-proposals" type="button" role="tab" aria-controls="assigned-proposals" aria-selected="false">
+            Assigned Proposals
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <a class="nav-link" href="{% url 'accounts:all_proposals' %}">All Proposals</a>
+    </li>
+    <li class="nav-item" role="presentation">
+        <a class="nav-link" href="{% url 'accounts:groups_tab' %}">Groups and Assigned Proposals</a>
+    </li>
+    <li class="nav-item" role="presentation">
+        <a class="nav-link" href="{% url 'accounts:assign_tasks' %}">Assign Tasks</a>
+    </li>
+    <li class="nav-item" role="presentation">
+        <a class="nav-link" href="{% url 'accounts:view_submissions' 0 %}">View Submissions</a>
+    </li>
+</ul>
+
+<!-- Tabs Content -->
+<div class="tab-content" id="facultyTabsContent">
+    <!-- Manage Groups Tab -->
+    <div class="tab-pane fade show active" id="manage-groups" role="tabpanel" aria-labelledby="manage-groups-tab">
+        <h2>Manage Groups</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Group Name</th>
+                    <th>Leader</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for group in groups %}
+                <tr>
+                    <td>{{ group.name }}</td>
+                    <td>{{ group.leader }}</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" onclick="deleteGroup({{ group.id }})">Delete</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Assigned Proposals Tab -->
+    <div class="tab-pane fade" id="assigned-proposals" role="tabpanel" aria-labelledby="assigned-proposals-tab">
+        <h2>Groups and Assigned Proposals</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Group Name</th>
+                    <th>Assigned Proposal</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for group in groups %}
+                <tr>
+                    <td>{{ group.name }}</td>
+                    <td>
+                        {% if group.assigned_proposal %}
+                            {{ group.assigned_proposal.title }}
+                        {% else %}
+                            Not Assigned
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'accounts:assign_proposal' group.id %}" class="btn btn-primary btn-sm">Assign Proposal</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function deleteGroup(groupId) {
+    if (confirm("Are you sure you want to delete this group?")) {
+        fetch(`/delete-group/${groupId}/`, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                alert(data.message);
+                location.reload();  // Reload the page to update the list
+            } else {
+                alert("Error: " + data.message);
+            }
+        })
+        .catch(error => alert("Request failed: " + error));
+    }
+}
+</script>
+{% endblock %}

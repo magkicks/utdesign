@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Groups and Assigned Proposals{% endblock %}
+
+{% block content %}
+<h1>Groups and Assigned Proposals</h1>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Group Name</th>
+            <th>Assigned Proposal</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for group in groups %}
+        <tr>
+            <td>{{ group.name }}</td>
+            <td>{{ group.assigned_proposal.title if group.assigned_proposal else "Not Assigned" }}</td>
+            <td>
+                <a href="{% url 'accounts:assign_proposal' group.id %}" class="btn btn-primary btn-sm">Assign Proposal</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

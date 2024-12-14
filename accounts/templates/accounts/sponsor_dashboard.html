@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Sponsor Dashboard{% endblock %}
+
+{% block content %}
+<h1>Hello, {{ user.username }}</h1>
+<h2>Welcome to the Sponsor Dashboard</h2>
+
+<!-- Logout Button -->
+<form action="{% url 'accounts:logout' %}" method="post" class="mb-3">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Logout</button>
+</form>
+
+<!-- Tabs Navigation -->
+<ul class="nav nav-tabs" id="sponsorTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="proposals-tab" data-bs-toggle="tab" data-bs-target="#proposals" type="button" role="tab" aria-controls="proposals" aria-selected="true">
+            My Proposals
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="groups-tab" data-bs-toggle="tab" data-bs-target="#groups" type="button" role="tab" aria-controls="groups" aria-selected="false">
+            Groups Assigned to My Proposals
+        </button>
+    </li>
+</ul>
+
+<!-- Tabs Content -->
+<div class="tab-content" id="sponsorTabsContent">
+    <!-- My Proposals Tab -->
+    <div class="tab-pane fade show active" id="proposals" role="tabpanel" aria-labelledby="proposals-tab">
+        <h3>Your Proposals</h3>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Proposal Number</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Submitted At</th>
+                    <th>File</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for proposal in proposals %}
+                <tr>
+                    <td>{{ proposal.proposal_number }}</td>
+                    <td>{{ proposal.title }}</td>
+                    <td>{{ proposal.description }}</td>
+                    <td>{{ proposal.created_at }}</td>
+                    <td>
+                        {% if proposal.file %}
+                            <a href="{{ proposal.file.url }}" target="_blank">View Proposal</a>
+                        {% else %}
+                            No file uploaded
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form method="POST" action="{% url 'proposals:delete_proposal' proposal.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{% url 'proposals:submit_proposal' %}" class="btn btn-primary mt-2">Submit a New Proposal</a>
+    </div>
+
+    <!-- Groups Assigned to My Proposals Tab -->
+    <div class="tab-pane fade" id="groups" role="tabpanel" aria-labelledby="groups-tab">
+        <h3>Groups Assigned to My Proposals</h3>
+        <div class="dashboard-actions mb-3">
+            <a href="{% url 'accounts:sponsor_view_submissions' %}" class="btn btn-primary">View Submissions</a>
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Proposal Title</th>
+                    <th>Group Name</th>
+                    <th>Group Members</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for group in groups %}
+                <tr>
+                    <td>{{ group.assigned_proposal.title }}</td>
+                    <td>{{ group.name }}</td>
+                    <td>
+                        <ul>
+                            {% for member in group.members.all %}
+                            <li>{{ member.name }} ({{ member.email }})</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

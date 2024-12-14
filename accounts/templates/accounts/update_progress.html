@@ -1,0 +1,15 @@
+<!-- templates/accounts/update_progress.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Update Progress for {{ group.name }}</h1>
+
+<form method="POST">
+    {% csrf_token %}
+    <label for="progress">Progress (%):</label>
+    <input type="number" name="progress" id="progress" value="{{ group.progress }}" min="0" max="100">
+    <button type="submit" class="btn btn-primary">Update</button>
+</form>
+
+<a href="{% url 'accounts:faculty_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+{% endblock %}

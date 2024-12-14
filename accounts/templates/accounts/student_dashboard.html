@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Hello, {{ user.username }}</h1>
+<h2>Welcome to the Student Dashboard</h2>
+
+<!-- Logout Button -->
+<form action="{% url 'accounts:logout' %}" method="post">
+    {% csrf_token %}
+    <button type="submit">Logout</button>
+</form>
+
+<!-- Navigation Tabs -->
+<nav>
+    <ul class="nav nav-tabs" id="studentTabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="proposals-tab" data-bs-toggle="tab" href="#assigned-proposals" role="tab" aria-controls="assigned-proposals" aria-selected="true">Assigned Proposals</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'accounts:all_proposals' %}">All Proposals</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'accounts:group_formation' %}">Group Formation</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'accounts:assigned_tasks' %}">Assigned Tasks</a>
+        </li>
+    </ul>
+</nav>
+
+<!-- Tabs Content -->
+<div class="tab-content" id="studentTabsContent">
+    <!-- Assigned Proposals Tab -->
+    <div class="tab-pane fade show active" id="assigned-proposals" role="tabpanel" aria-labelledby="proposals-tab">
+        <h2>Your Assigned Proposals</h2>
+        {% for group in groups %}
+        <div>
+            <p><strong>Group:</strong> {{ group.name }}</p>
+            <p><strong>Assigned Proposal:</strong> 
+            {% if group.assigned_proposal %}
+                {{ group.assigned_proposal.title }}
+            {% else %}
+                Not Assigned
+            {% endif %}
+            </p>
+        </div>
+        {% empty %}
+        <p>You are not part of any group or no proposals have been assigned yet.</p>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

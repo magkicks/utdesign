@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Proposal</title>
+</head>
+<body>
+    <h1>Assign Proposals</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <!-- Group Selection -->
+        <label for="group">Select Group:</label>
+        <select id="group" name="group">
+            <option value="">-- Select Group --</option>
+            {% for group in groups %}
+                <option value="{{ group.id }}">{{ group.name }}</option>
+            {% endfor %}
+        </select>
+
+        <!-- Proposal Selection -->
+        <label for="proposal">Select Proposal:</label>
+        <select id="proposal" name="proposal">
+            <option value="">-- Select Proposal --</option>
+            {% for proposal in proposals %}
+                <option value="{{ proposal.id }}">{{ proposal.title }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Assign Proposal</button>
+    </form>
+
+    <a href="{% url 'accounts:faculty_dashboard' %}">Back to Dashboard</a>
+</body>
+</html>

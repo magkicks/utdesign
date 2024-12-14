@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+
+{% if task %}
+<p><strong>Task Title:</strong> {{ task.title }}</p>
+<p><strong>Description:</strong> {{ task.description }}</p>
+{% endif %}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Task Title</th>
+            <th>Student</th>
+            <th>Content</th>
+            <th>Attachment</th>
+            <th>Submitted At</th>
+            <th>Faculty Comment</th>
+            <th>Sponsor Comment</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for submission in submissions %}
+        <tr>
+            <td>{{ submission.task.title }}</td>
+            <td>{{ submission.student.username }}</td>
+            <td>{{ submission.content }}</td>
+            <td>
+                {% if submission.attachment %}
+                <a href="{{ submission.attachment.url }}" target="_blank">Download</a>
+                {% else %}
+                No Attachment
+                {% endif %}
+            </td>
+            <td>{{ submission.submitted_at }}</td>
+            <td>{{ submission.faculty_comment }}</td>
+            <td>{{ submission.sponsor_comment }}</td>
+            <td>
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="submission_id" value="{{ submission.id }}">
+                    {% if user.role == 'faculty' %}
+                        <textarea name="faculty_comment" rows="2">{{ submission.faculty_comment }}</textarea>
+                    {% elif user.role == 'sponsor' %}
+                        <textarea name="sponsor_comment" rows="2">{{ submission.sponsor_comment }}</textarea>
+                    {% endif %}
+                    <button type="submit" class="btn btn-primary btn-sm mt-1">Save Feedback</button>
+                </form>
+                
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+
+{% if submissions|length == 0 %}
+<p>No submissions available.</p>
+{% endif %}
+{% endblock %}

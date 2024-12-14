@@ -1,0 +1,34 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+env/
+venv/
+.final/
+
+# Local settings
+*.local
+.env
+
+# Logs
+*.log
+*.log.*
+
+# Database
+*.sqlite3
+
+# Media and Static Files
+/media/
+*.png
+*.jpg
+*.jpeg
+*.gif
+
+# Node.js files
+node_modules/
+build/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

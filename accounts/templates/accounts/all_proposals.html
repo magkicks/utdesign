@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}All Proposals{% endblock %}
+
+{% block content %}
+<h2>All Proposals</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Proposal Number</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Submitted By</th>
+            <th>File</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for proposal in proposals %}
+        <tr>
+            <td>{{ proposal.proposal_number }}</td>
+            <td>{{ proposal.title }}</td>
+            <td>{{ proposal.description }}</td>
+            <td>{{ proposal.sponsor.username }}</td>
+            <td>
+                {% if proposal.file %}
+                <a href="{{ proposal.file.url }}" target="_blank" class="btn btn-primary btn-sm">View Proposal</a>
+                {% else %}
+                No file uploaded
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5" class="text-center">No proposals available.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

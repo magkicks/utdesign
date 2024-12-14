@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Formation</title>
+</head>
+<body>
+    <h1>Group Formation</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <!-- Group Name -->
+        <div>
+            <label for="group_name">Group Name</label>
+            <input type="text" id="group_name" name="name" placeholder="Enter group name" required>
+        </div>
+        
+        <!-- Group Leader -->
+        <div>
+            <label for="leader_name">Leader Name</label>
+            <input type="text" id="leader_name" name="leader" placeholder="Enter leader name (optional)">
+        </div>
+
+        <!-- Group Members -->
+        <h2>Group Members</h2>
+        {% for i in member_range %}
+        <div>
+            <label for="id_member_name_{{ i }}">Member {{ i }} Name</label>
+            <input type="text" id="id_member_name_{{ i }}" name="member_name_{{ i }}" placeholder="Enter name">
+
+            <label for="id_member_email_{{ i }}">Member {{ i }} Email</label>
+            <input type="email" id="id_member_email_{{ i }}" name="member_email_{{ i }}" placeholder="Enter email">
+
+            <label for="id_member_phone_{{ i }}">Member {{ i }} Phone</label>
+            <input type="text" id="id_member_phone_{{ i }}" name="member_phone_{{ i }}" placeholder="Enter phone">
+        </div>
+        {% endfor %}
+
+        <!-- Meeting Time Slots -->
+        <h2>Meeting Time Slots</h2>
+        {% for i in time_slots_range %}
+        <div>
+            <label for="id_time_slot_{{ i }}">Time Slot {{ i }}</label>
+            <input type="text" id="id_time_slot_{{ i }}" name="time_slot_{{ i }}" placeholder="(e.g., Mon 2-4p)">
+        </div>
+        {% endfor %}
+
+        <!-- Proposal Preferences -->
+        <h2>Proposal Preferences</h2>
+        {% for proposal in proposals %}
+        <div>
+            <label for="id_preference_{{ proposal.id }}">{{ proposal.title }}</label>
+            <input type="number" id="id_preference_{{ proposal.id }}" name="preference_{{ proposal.id }}" 
+                   min="1" max="{{ proposals|length }}" placeholder="Rank (1 to {{ proposals|length }})">
+        </div>
+        {% endfor %}
+
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>

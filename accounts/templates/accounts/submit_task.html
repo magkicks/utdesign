@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Submit Task: {{ task.title }}</h1>
+<p>{{ task.description }}</p>
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<a href="{% url 'accounts:assigned_tasks' %}" class="btn btn-secondary">Back to Assigned Tasks</a>
+{% endblock %}

@@ -1,0 +1,52 @@
+<h1>Assign Tasks</h1>
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <label for="proposal_id">Link to Proposal (Optional):</label>
+    <select name="proposal_id" id="proposal_id" class="form-control">
+        <option value="">General Task (No Proposal)</option>
+        {% for proposal in proposals %}
+            <option value="{{ proposal.id }}">{{ proposal.title }}</option>
+        {% endfor %}
+    </select>
+
+    <button type="submit" class="btn btn-primary mt-3">Create Task</button>
+</form>
+
+<h2>Existing Tasks</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Proposal</th>
+            <th>Created At</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for task in tasks %}
+        <tr>
+            <td>{{ task.title }}</td>
+            <td>{{ task.description }}</td>
+            <td>
+                {% if task.proposal %}
+                    {{ task.proposal.title }}
+                {% else %}
+                    General Task
+                {% endif %}
+            </td>
+            <td>{{ task.created_at }}</td>
+            <td>
+                <form method="POST" style="display:inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="task_id" value="{{ task.id }}">
+                    <button type="submit" name="delete_task" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
