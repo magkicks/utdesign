@@ -85,9 +85,8 @@ class GroupFormationForm(forms.ModelForm):
         meeting_slots = [
             self.cleaned_data.get(f'time_slot_{i}') for i in range(1, 4)
         ]
-        instance.meeting_slots = [slot for slot in meeting_slots if slot]  
+        instance.meeting_slots = [slot for slot in meeting_slots if slot]
 
-        # Handle proposal preferences 
         if commit:
             instance.save()
         return instance

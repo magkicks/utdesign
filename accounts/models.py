@@ -32,13 +32,14 @@ class UserProfile(AbstractUser):
 
 # Member Model (Separate from UserProfile)
 class Member(models.Model):
-    user = models.OneToOneField('accounts.UserProfile', on_delete=models.CASCADE, null=True, blank=True)  # Allow NULL values
+    user = models.OneToOneField('accounts.UserProfile', on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=255)
     email = models.EmailField()
-    phone = models.CharField(max_length=15)
+    phone = models.CharField(max_length=15, blank=True, default='')
 
     def __str__(self):
-        return self.user.username if self.user else "No User Associated"
+        return self.name or "Unnamed Member"
+
 
 
 @receiver(post_save, sender=UserProfile)
@@ -66,8 +67,8 @@ def save_member_for_user(sender, instance, **kwargs):
 
 # Group Model
 class Group(models.Model):
-    name = models.CharField(max_length=255, blank=True, null=True)  # Group name should not be null/blank
-    leader = models.CharField(max_length=255, blank=True, null=True)  # Group leader as plain text
+    name = models.CharField(max_length=255, blank=False, null=False)  # Name is required
+    leader = models.CharField(max_length=255, blank=True, null=True)
     members = models.ManyToManyField('accounts.Member', related_name='member_groups', blank=True)
     preferences = models.ManyToManyField('proposals.Proposal', related_name='preferred_groups', blank=True)
     assigned_proposal = models.ForeignKey(
@@ -75,23 +76,11 @@ class Group(models.Model):
     )
     meeting_slots = models.JSONField(blank=True, null=True)
     member_details = models.JSONField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
-        
         if not self.name:
             raise ValueError("The 'name' field cannot be empty.")
-
-        # Transform leader to uppercase if provided
-        if self.leader:
-            self.leader = self.leader.upper()
-
-        
-        for member in self.members.all():
-            if not member.user:
-                print(f"Warning: Member {member.name} is not linked to a UserProfile.")
-
-        # Save using the base class method
         super().save(*args, **kwargs)
 
     def __str__(self):
