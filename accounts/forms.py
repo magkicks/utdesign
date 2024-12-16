@@ -117,20 +117,23 @@ class TaskForm(forms.ModelForm):
 class TaskSubmissionForm(forms.ModelForm):
     class Meta:
         model = TaskSubmission
-        fields = ['task', 'content', 'attachment']  
+        fields = ['task', 'content', 'attachment']
 
     def __init__(self, *args, **kwargs):
-        task = kwargs.pop('task', None)
+        # Allow passing a specific queryset via kwargs
+        task_queryset = kwargs.pop('task_queryset', Task.objects.all())
+        specific_task = kwargs.pop('task', None)  # Option to pass a single task
         super().__init__(*args, **kwargs)
 
-        if task:
-            # Set the queryset to include only the specific task
-            self.fields['task'].queryset = Task.objects.filter(id=task.id)
-            self.fields['task'].initial = task  
-            self.fields['task'].disabled = True  
+        if specific_task:
+            # Limit the queryset to the specific task
+            self.fields['task'].queryset = Task.objects.filter(id=specific_task.id)
+            self.fields['task'].initial = specific_task
+            self.fields['task'].disabled = True  # Disable if a specific task is pre-selected
         else:
-            # If no task is provided, clear the queryset
-            self.fields['task'].queryset = Task.objects.none()
+            # Use the provided task_queryset for general task population
+            self.fields['task'].queryset = task_queryset
+            self.fields['task'].label = "Select Task"
 
 
 class FeedbackForm(forms.ModelForm):

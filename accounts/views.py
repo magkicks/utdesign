@@ -471,12 +471,17 @@ def assigned_tasks(request):
         # Retrieve tasks linked to proposals assigned to the user's groups
         tasks = Task.objects.filter(proposal__assigned_group__in=user_groups).distinct()
 
+        # Fetch submissions related to these tasks
+        task_submissions = TaskSubmission.objects.filter(student=request.user, task__in=tasks).select_related('task')
     except Member.DoesNotExist:
         # Handle case where the user is not linked to any Member
         tasks = Task.objects.none()
+        task_submissions = TaskSubmission.objects.none()
 
-    return render(request, 'accounts/assigned_tasks.html', {'tasks': tasks})
-
+    return render(request, 'accounts/assigned_tasks.html', {
+        'tasks': tasks,
+        'task_submissions': task_submissions,  # Include task submissions
+    })
 
 
 
