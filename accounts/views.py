@@ -408,40 +408,25 @@ def assign_tasks(request):
         messages.error(request, "You are not authorized to assign tasks.")
         return redirect('accounts:dashboard')
 
+    tasks = Task.objects.all()  # Initialize tasks to prevent UnboundLocalError
+
     if request.method == 'POST':
         form = TaskForm(request.POST, request.FILES)
         proposal_id = request.POST.get('proposal_id', None)
-        print(f"DEBUG: Proposal ID submitted: {proposal_id}")  # Log submitted proposal_id
 
         if form.is_valid():
             task = form.save(commit=False)
-            if proposal_id:  # Check if a proposal_id was submitted
+            if proposal_id:
                 proposal = Proposal.objects.filter(id=proposal_id).first()
                 if proposal:
                     task.proposal = proposal
-                    print(f"DEBUG: Task linked to Proposal ID: {proposal.id} - {proposal.title}")
-                else:
-                    print(f"DEBUG: Proposal ID {proposal_id} not found in the database.")
-            else:
-                print("DEBUG: No Proposal ID provided; task will be general.")
-
             task.save()
             messages.success(request, 'Task created successfully!')
-            return render(request, 'accounts/assign_tasks.html', {
-                'form': TaskForm(),
-                'tasks': tasks,
-                'proposals': proposals,
-            })
-
+            return redirect('accounts:assign_tasks')
         else:
-            print(f"DEBUG: Form errors: {form.errors}")
             messages.error(request, 'Failed to create task. Check the form for errors.')
 
     proposals = Proposal.objects.all()
-    tasks = Task.objects.all()
-
-    print(f"DEBUG: Proposals available: {[proposal.title for proposal in proposals]}")
-    print(f"DEBUG: Existing tasks: {[task.title for task in tasks]}")
 
     return render(request, 'accounts/assign_tasks.html', {
         'form': TaskForm(),
