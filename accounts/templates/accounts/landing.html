@@ -4,11 +4,70 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to UTDesign</title>
+    {% load static %}
+    <style>
+        /* Full page background */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        body {
+            background: url("{% static 'accounts/images/background.jpg' %}") no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+
+        /* Centered container */
+        .welcome-container {
+            background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white */
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .welcome-container h1 {
+            margin-bottom: 1rem;
+            font-size: 2rem;
+            color: #333;
+        }
+
+        .welcome-container p {
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+
+        /* Buttons */
+        .welcome-container a {
+            display: inline-block;
+            margin: 0.5rem;
+            padding: 0.7rem 1.5rem;
+            text-decoration: none;
+            color: #fff;
+            background-color: #007bff;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .welcome-container a:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to UTDesign</h1>
-    <p>Please log in or register to continue.</p>
-    <a href="{% url 'accounts:login' %}">Login</a>
-    <a href="{% url 'accounts:register' %}">Register</a>
+    <div class="welcome-container">
+        <h1>Welcome to UTDesign</h1>
+        <p>Please log in or register to continue.</p>
+        <a href="{% url 'accounts:login' %}">Login</a>
+        <a href="{% url 'accounts:register' %}">Register</a>
+    </div>
 </body>
 </html>
